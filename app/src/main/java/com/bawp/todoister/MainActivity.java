@@ -1,25 +1,23 @@
 package com.bawp.todoister;
 
 import android.os.Bundle;
-
-import com.bawp.todoister.model.Priority;
-import com.bawp.todoister.model.Task;
-import com.bawp.todoister.model.TaskViewModel;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.view.View;
-
-import android.view.Menu;
-import android.view.MenuItem;
+import com.bawp.todoister.model.Priority;
+import com.bawp.todoister.model.Task;
+import com.bawp.todoister.model.TaskViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "ITEM";
     private TaskViewModel taskViewModel;
 
     @Override
@@ -30,9 +28,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         taskViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(TaskViewModel.class);
 
+        taskViewModel.getAllTasks().observe(this, tasks -> {
+            for (Task task : tasks) {
+                Log.d(TAG, "onCreate: " + task.getTaskId());
+            }
+        });
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            Task task = new Task("Todo", Priority.HIGH, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(),false);
+            Task task = new Task("Todo", Priority.HIGH, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), false);
 
             TaskViewModel.insert(task);
         });
